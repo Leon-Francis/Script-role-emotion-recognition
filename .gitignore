@@ -1,3 +1,6 @@
 data/
 temp/
 output/
+.vscode/
+__pycache__/
+*.pyc
