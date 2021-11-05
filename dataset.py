@@ -2,7 +2,7 @@ from typing import Tuple
 import torch
 from torch.utils.data.dataset import Dataset
 from torch.utils.data import DataLoader
-from config import Data_config
+from config import DataConfig
 from transformers import BertTokenizer, BertModel
 import re
 from tqdm import tqdm 
@@ -60,20 +60,20 @@ class Script_dataset(Dataset):
     def __init__(self, train_data=True, full_train_mode=False):
         super(Script_dataset, self).__init__()
 
-        self.max_len = Data_config.max_sentence_lenth
-        self.tokenizer = BertTokenizer.from_pretrained(Data_config.PRE_TRAINED_MODEL_NAME)
+        self.max_len = DataConfig.max_sentence_lenth
+        self.tokenizer = BertTokenizer.from_pretrained(DataConfig.PRE_TRAINED_MODEL_NAME)
         self.tokenizer.add_special_tokens({'additional_special_tokens':['[SOR]', '[EOR]']})
         
         if full_train_mode:
-            sentences, emotions = read_data(self.tokenizer, Data_config.train_data_path, train_data)
+            sentences, emotions = read_data(self.tokenizer, DataConfig.train_data_path, train_data)
         else:
             if train_data:
-                sentences, emotions = read_data(self.tokenizer, Data_config.train_data_path, True)
+                sentences, emotions = read_data(self.tokenizer, DataConfig.train_data_path, True)
                 sentences = sentences[:int(len(sentences)/10*9)]
                 for key, value in emotions.items():
                     emotions[key] = value[:int(len(value)/10*9)]
             else:
-                sentences, emotions = read_data(self.tokenizer, Data_config.train_data_path, True)
+                sentences, emotions = read_data(self.tokenizer, DataConfig.train_data_path, True)
                 sentences = sentences[int(len(sentences)/10*9):]
                 for key, value in emotions.items():
                     emotions[key] = value[int(len(value)/10*9):]
@@ -84,7 +84,7 @@ class Script_dataset(Dataset):
             self.labels[key] = torch.tensor(value, dtype=torch.float)
 
     def data2ids(self, sentences):
-        encodings = self.tokenizer(sentences, padding=True, truncation=True, max_length=Data_config.max_sentence_lenth, return_tensors='pt')
+        encodings = self.tokenizer(sentences, padding=True, truncation=True, max_length=DataConfig.max_sentence_lenth, return_tensors='pt')
         encodings['sentences'] = sentences
         return encodings
 

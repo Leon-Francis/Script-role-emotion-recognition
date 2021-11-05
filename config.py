@@ -1,4 +1,4 @@
-class Data_config():
+class DataConfig():
     train_data_path = './data/train_dataset_v2.tsv'
     test_data_path = './data/test_dataset.tsv'
     max_sentence_lenth = 200
