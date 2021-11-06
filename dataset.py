@@ -61,7 +61,7 @@ class Script_dataset(Dataset):
         super(Script_dataset, self).__init__()
 
         self.max_len = DataConfig.max_sentence_lenth
-        self.tokenizer = BertTokenizer.from_pretrained(DataConfig.PRE_TRAINED_MODEL_NAME)
+        self.tokenizer = BertTokenizer.from_pretrained(DataConfig.bert_model_name)
         self.tokenizer.add_special_tokens({'additional_special_tokens':['[SOR]', '[EOR]']})
         
         if full_train_mode:
@@ -91,7 +91,7 @@ class Script_dataset(Dataset):
     def __len__(self) -> int:
         return len(self.encodings['input_ids'])
 
-    def __getitem__(self, index: int) -> Tuple[dict, dict]: #(['sentence', 'input_ids', 'token_type_ids', 'attention_mask'], ['emotion_label'])
+    def __getitem__(self, index: int) -> Tuple[dict, dict]: #(['sentence', 'input_ids', 'token_type_ids', 'attention_mask'], ['emotion_label1', ...])
         output_feature = dict()
         for key, value in self.encodings.items():
             output_feature[key] = value[index]
