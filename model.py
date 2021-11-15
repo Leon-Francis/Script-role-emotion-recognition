@@ -11,11 +11,11 @@ def init_params(module_lst):
     return
 
 class BaseModel(nn.Module):
-    def __init__(self):
+    def __init__(self, tokenizer):
         super(BaseModel, self).__init__()
         self.bert_name = ModelConfig.bert_model_name
-        self.bert_config = BertConfig.from_pretrained(self.bert_name) # 暂时维持原参数
-        self.bert = BertModel.from_pretrained(self.bert_name, self.bert_config)
+        self.bert = BertModel.from_pretrained(self.bert_name) # 暂时维持原参数
+        self.bert.resize_token_embeddings(len(tokenizer))
 
         self.bert_dim = 1024 if 'large' in self.bert_name else 768
 
@@ -48,19 +48,17 @@ class BaseModel(nn.Module):
 
     
     def forward(self, input_ids, token_type_ids, attention_mask):
-        roberta_output = self.bert(input_ids=input_ids,
-                                   token_type_ids=token_type_ids,
-                                   attention_mask=attention_mask)
-
-        last_layer_hidden_states = roberta_output.hidden_states[-1]
+        last_hidden_state, pooler_output = self.bert(input_ids=input_ids,
+                                                     token_type_ids=token_type_ids,
+                                                     attention_mask=attention_mask)
 
 
-        love = self.out_love(last_layer_hidden_states)
-        joy = self.out_joy(last_layer_hidden_states)
-        fright = self.out_fright(last_layer_hidden_states)
-        anger = self.out_anger(last_layer_hidden_states)
-        fear = self.out_fear(last_layer_hidden_states)
-        sorrow = self.out_sorrow(last_layer_hidden_states)
+        love = self.out_love(pooler_output)
+        joy = self.out_joy(pooler_output)
+        fright = self.out_fright(pooler_output)
+        anger = self.out_anger(pooler_output)
+        fear = self.out_fear(pooler_output)
+        sorrow = self.out_sorrow(pooler_output)
 
         return {
             'love': love, 'joy': joy, 'fright': fright,

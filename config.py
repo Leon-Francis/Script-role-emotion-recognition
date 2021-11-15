@@ -2,13 +2,14 @@ import torch
 
 PRE_TRAINED_MODEL_NAME='hfl/chinese-roberta-wwm-ext'
 CONFIG_PATH = 'config.py'
-
+DEBUG_MODE = False
 
 class DataConfig():
     train_data_path = './data/train_dataset_v2.tsv'
     test_data_path = './data/test_dataset.tsv'
-    max_sentence_lenth = 128
+    max_sentence_lenth = 64
     bert_model_name = PRE_TRAINED_MODEL_NAME
+    debug_mode = DEBUG_MODE
 
 class ModelConfig():
     bert_model_name = PRE_TRAINED_MODEL_NAME
@@ -21,7 +22,7 @@ class TrainingConfig():
     batch_size = 64
     epoch = 10
 
-    debug_mode = False
+    debug_mode = DEBUG_MODE
     save_score_limit = 0.69
 
     weight_decay=1e-3

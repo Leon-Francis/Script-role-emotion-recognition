@@ -29,7 +29,7 @@ def build_dataset():
                            shuffle=False,
                            num_workers=4)
 
-    return train_data, test_data
+    return train_data, test_data, train_dataset_orig.tokenizer
 
 def train(train_data, model, criterion, optimizer):
     model.train()
@@ -82,7 +82,7 @@ def evaluate(test_data, model, criterion):
         loss_mean += loss.item()
 
         for key, value in outputs.items():
-            score += torch.sum((outputs[key] * 3 - test_labels[key] * 3) ** 2).item()
+            score += torch.sum((outputs[key] * 3 - test_labels[key].to(TrainingConfig.train_device) * 3) ** 2).item()
 
         total += test_labels['love'].size()[0]
 
@@ -101,10 +101,10 @@ if __name__ == "__main__":
     save_config(cur_dir)
 
     logging('preparing data...')
-    train_data, test_data = build_dataset()
+    train_data, test_data, tokenizer = build_dataset()
 
     logging('init models, optimizer, criterion...')
-    model = BaseModel().to(TrainingConfig.train_device)
+    model = BaseModel(tokenizer).to(TrainingConfig.train_device)
 
     optimizer = optim.AdamW([{
             'params': model.bert.parameters(),

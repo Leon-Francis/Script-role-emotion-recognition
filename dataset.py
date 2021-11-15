@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 # 如果句子长度不超，则在该场景文本中依次向后拓展一句、向前拓展一句  <- 因为样本分类分的不是很好，并且感觉不是特别必须，暂时先不这样做了
 # 需要两步过程，第一步还原出长段文本，第二步构造训练样本  <- 因为样本分类分的不是很好，并且感觉不是特别必须，暂时先不这样做了
-def read_data(tokenizer, data_path, train_data=True):
+def read_data(tokenizer, data_path, train_data=True, debug_mode=False):
     sentences = []
     emotions = {'love': [], 'joy': [], 'fright': [], 'anger': [], 'fear': [], 'sorrow': []}
     with open(data_path, 'r', encoding='utf-8') as f:
@@ -17,6 +17,9 @@ def read_data(tokenizer, data_path, train_data=True):
             for index, line in enumerate(f):
                 if index == 0:
                     continue
+                if debug_mode and index == 200:
+                    break
+                
                 line = line.strip()
                 sp_list = line.split('\t')
                 
@@ -43,6 +46,10 @@ def read_data(tokenizer, data_path, train_data=True):
             for index, line in enumerate(f):
                 if index == 0:
                     continue
+                
+                if debug_mode and index == 200:
+                    break
+
                 sp_list = line.split('\t')
                 
                 if len(sp_list) != 3:
@@ -65,15 +72,15 @@ class Script_dataset(Dataset):
         self.tokenizer.add_special_tokens({'additional_special_tokens':['[SOR]', '[EOR]']})
         
         if full_train_mode:
-            sentences, emotions = read_data(self.tokenizer, DataConfig.train_data_path, train_data)
+            sentences, emotions = read_data(self.tokenizer, DataConfig.train_data_path, train_data, DataConfig.debug_mode)
         else:
             if train_data:
-                sentences, emotions = read_data(self.tokenizer, DataConfig.train_data_path, True)
+                sentences, emotions = read_data(self.tokenizer, DataConfig.train_data_path, True, DataConfig.debug_mode)
                 sentences = sentences[:int(len(sentences)/10*9)]
                 for key, value in emotions.items():
                     emotions[key] = value[:int(len(value)/10*9)]
             else:
-                sentences, emotions = read_data(self.tokenizer, DataConfig.train_data_path, True)
+                sentences, emotions = read_data(self.tokenizer, DataConfig.train_data_path, True, DataConfig.debug_mode)
                 sentences = sentences[int(len(sentences)/10*9):]
                 for key, value in emotions.items():
                     emotions[key] = value[int(len(value)/10*9):]
