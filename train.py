@@ -82,7 +82,7 @@ def evaluate(test_data, model, criterion):
         loss_mean += loss.item()
 
         for key, value in outputs.items():
-            score += torch.sum((outputs[key] * 3 - test_labels[key].to(TrainingConfig.train_device) * 3) ** 2).item()
+            score += torch.sum((outputs[key].sigmoid().squeeze(1) * 3 - test_labels[key].to(TrainingConfig.train_device) * 3) ** 2).item()
 
         total += test_labels['love'].size()[0]
 
